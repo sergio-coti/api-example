@@ -28,12 +28,16 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      # Step 4: Upload the built JAR as an artifact for use in the deploy step
+      # Step 4: List files in target directory (to check if the JAR was generated)
+      - name: List files in target directory
+        run: ls -la target
+
+      # Step 5: Upload the built JAR as an artifact for use in the deploy step
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v3
         with:
           name: api-application
-          path: target/api-example-1.0.jar  # Nome exato do JAR baseado no pom.xml
+          path: target/*.jar  # Usando wildcard para capturar o JAR
 
   deploy:
     name: Deploy to AWS Elastic Beanstalk
@@ -59,9 +63,9 @@ jobs:
           application_name: Apiexample  # Substitua pelo nome da sua aplicação no EB
           environment_name: Apiexample-env  # Substitua pelo nome do ambiente no EB
           region: us-east-1                        # Substitua pela região do AWS
-          deployment_package: target/api-example-1.0.jar  # Caminho exato do JAR
+          deployment_package: target/*.jar  # Usando wildcard para capturar o JAR
           version_label: ${{ github.sha }}         # Rótulo de versão único baseado no hash do commit
 
       # Step 4: Clean up artifacts
       - name: Clean up
-        run: rm -f target/api-example-1.0.jar
+        run: rm -f target/*.jar
