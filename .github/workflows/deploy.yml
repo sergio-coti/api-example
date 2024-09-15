@@ -53,6 +53,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: api-application
+          path: .  # Baixa o JAR no diretório atual
 
       # Step 3: List downloaded artifacts (to verify the location of the JAR)
       - name: List downloaded artifact
@@ -67,7 +68,7 @@ jobs:
           application_name: Apiexample  # Substitua pelo nome da sua aplicação no EB
           environment_name: Apiexample-env  # Substitua pelo nome do ambiente no EB
           region: us-east-1  # Substitua pela região da AWS
-          deployment_package: api-application/*.jar  # Use o nome do arquivo JAR baixado
+          deployment_package: "*.jar"  # Usando wildcard para capturar o arquivo JAR
           version_label: ${{ github.sha }}  # Rótulo de versão único baseado no commit
 
       # Step 5: Clean up artifacts
