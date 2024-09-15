@@ -37,7 +37,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: api-application
-          path: target/*.jar  # Usando wildcard para capturar o JAR
+          path: target/*.jar  # Usando wildcard para capturar o JAR gerado
 
   deploy:
     name: Deploy to AWS Elastic Beanstalk
@@ -54,11 +54,9 @@ jobs:
         with:
           name: api-application
 
-      # Step 3: Move JAR to specific location
-      - name: Move JAR to target directory
-        run: |
-          mkdir -p target
-          mv api-application/*.jar target/
+      # Step 3: List downloaded artifacts (to verify the location of the JAR)
+      - name: List downloaded artifact
+        run: ls -la
 
       # Step 4: Deploy to Elastic Beanstalk using the jar file
       - name: Deploy to Elastic Beanstalk
@@ -68,10 +66,10 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: Apiexample  # Substitua pelo nome da sua aplicação no EB
           environment_name: Apiexample-env  # Substitua pelo nome do ambiente no EB
-          region: us-east-1                        # Substitua pela região do AWS
-          deployment_package: target/api-example-1.0.jar  # Use o nome exato do JAR capturado
-          version_label: ${{ github.sha }}         # Rótulo de versão único baseado no hash do commit
+          region: us-east-1  # Substitua pela região da AWS
+          deployment_package: api-application/*.jar  # Use o nome do arquivo JAR baixado
+          version_label: ${{ github.sha }}  # Rótulo de versão único baseado no commit
 
       # Step 5: Clean up artifacts
       - name: Clean up
-        run: rm -f target/*.jar
+        run: rm -f *.jar
